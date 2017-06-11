@@ -23,6 +23,17 @@
 #define D_EN1 17
 #define D_EN2 34
 #define D_Enable 29
+//Port 1
+struct SensorPort {
+  byte analogPin;
+  byte digitalPin1;
+  byte digitalPin2;
+}; 
+const SensorPort SensorPort1 = {A8,35,36};
+const SensorPort SensorPort2 = {A9,37,38};
+const SensorPort SensorPort3 = {A10,41,42};
+const SensorPort SensorPort4 = {A11,39,40};
+
 
 void Motor_Begin(){
   MotorA_Begin();
@@ -163,7 +174,7 @@ long              MotorB_getDistance(){
 void              MotorB_setDistanceToNull(){
   MotorB_dist = 0;
   }
-// Motor C Methoden
+                  // Motor C Methoden
 boolean           MotorC_dir  ;
 volatile int      MotorC_count = 0;
 volatile long     MotorC_dist = 0;
@@ -230,7 +241,7 @@ void              MotorC_setDistanceToNull(){
   MotorC_dist = 0;
   }
 
-// Motor D Methoden
+                  // Motor D Methoden
 boolean           MotorD_dir  ;
 volatile int      MotorD_count = 0;
 volatile long     MotorD_dist = 0;
@@ -297,12 +308,91 @@ void              MotorD_setDistanceToNull(){
   MotorD_dist = 0;
   }
 
+class SoundSensor{
+  private:
+  SensorPort        PortOfThis;
+  int inMinimum     = 10;
+  int inMaximum     = 210;
+  int outMinimum    = 0;
+  int outMaximum    = 255 ;
+  int SensorValue   ;
+  public:
+  SoundSensor(SensorPort a ){
+    PortOfThis = a;
+    pinMode (PortOfThis.analogPin,INPUT);
+    }
+  int   readRaw(){
+    return analogRead(PortOfThis.analogPin);
+    }
+  int   read(){
+    return map(readRaw(),inMinimum,inMaximum,outMinimum,outMaximum);
+    }
+  void  setInMaximum (int n){
+    inMaximum = n;
+    } 
+  void  setInMinimum(int n){
+    inMaximum = n;
+  }
+  void  setOutMaximum(int n){
+    outMaximum = n;
+    }
+  void  setOutMinimum(int n){
+    outMinimum = n;
+    }
+  };
+class LightSensor{
+  private:
+  SensorPort        PortOfThis;
+  int inMinimum     = 60;
+  int inMaximum     = 200;
+  int outMinimum    = 0;
+  int outMaximum    = 255 ;
+  int SensorValue   ;
+  public:
+  LightSensor(SensorPort a ){
+    PortOfThis = a;
+    pinMode (a.analogPin,INPUT);
+    pinMode (a.digitalPin1,OUTPUT);
+    }
+  int   readRaw(){
+    return analogRead(A8);
+    }
+  int   read(){
+    return   map(readRaw(),inMinimum,inMaximum,outMinimum,outMaximum);
 
+    }
+  void  setInMaximum (int n){
+    inMaximum = n;
+    } 
+  void  setInMinimum(int n){
+    inMaximum = n;
+  }
+  void  setOutMaximum(int n){
+    outMaximum = n;
+    }
+  void  setOutMinimum(int n){
+  };
+  void  LedStat(boolean pState){
+    digitalWrite(PortOfThis.digitalPin1,pState);
+    }
+};
+LightSensor Lausch(SensorPort1);
+int mini = 1023;
+int maxi = 0;
 void setup() {
-  Motor_Begin();
+
+  Serial.begin(1000000);
+  delayMicroseconds(500);
+  //Lausch.LedStat(HIGH);
   }
 
 void loop() {
-  MotorA_forward(128);
-  MotorB_forward(255);
+  int a = Lausch.readRaw();
+  mini = min(mini,a);
+  maxi = max(maxi,a);
+//Serial.println(Lausch.read());
+Serial.println("MAX:" maxi +"MIN:"+mini);
+//Serial.println(analogRead(A8));
+delay(100);
+
 }
