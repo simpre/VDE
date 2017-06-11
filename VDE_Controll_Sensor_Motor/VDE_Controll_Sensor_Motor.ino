@@ -343,8 +343,8 @@ class SoundSensor{
 class LightSensor{
   private:
   SensorPort        PortOfThis;
-  int inMinimum     = 60;
-  int inMaximum     = 200;
+  int inMinimum     = 0;
+  int inMaximum     = 750;
   int outMinimum    = 0;
   int outMaximum    = 255 ;
   int SensorValue   ;
@@ -372,26 +372,25 @@ class LightSensor{
     }
   void  setOutMinimum(int n){
   };
-  void  LedStat(boolean pState){
+  void  setLedStat(boolean pState){
     digitalWrite(PortOfThis.digitalPin1,pState);
     }
 };
 LightSensor Lausch(SensorPort1);
-int mini = 1023;
-int maxi = 0;
+
 void setup() {
 
   Serial.begin(1000000);
   delayMicroseconds(500);
   //Lausch.LedStat(HIGH);
+  Lausch.setLedStat(HIGH);
   }
 
 void loop() {
-  int a = Lausch.readRaw();
-  mini = min(mini,a);
-  maxi = max(maxi,a);
-//Serial.println(Lausch.read());
-Serial.println("MAX:" maxi +"MIN:"+mini);
+//  int a = Lausch.readRaw();
+
+Serial.println(Lausch.readRaw());
+
 //Serial.println(analogRead(A8));
 delay(100);
 
